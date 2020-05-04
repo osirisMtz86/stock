@@ -1,0 +1,181 @@
+<nav class="uk-navbar-container uk-margin" uk-navbar>
+    <div class="uk-navbar-center">
+
+        <a class="uk-navbar-item uk-logo" href="#">Stock</a>
+
+        <div class="uk-navbar-item">
+            <div>
+                <a href="#modal-item" uk-toggle>
+                    <span class="uk-icon uk-margin-small-right" uk-icon="icon: plus"></span>Add New Item
+                </a>
+            </div>
+        </div>
+
+        <div class="uk-navbar-item">
+            <form action="javascript:void(0)">
+                <input id="itemNumberId" name="itemNumberName" class="uk-input uk-form-width-small" type="text" placeholder="Item No." [(ngModel)]="itemNumber">
+                <button id="btnBrowser" class="uk-button uk-button-default" (click)="browser()">Browse</button>
+            </form>
+        </div>
+
+    </div>
+</nav>
+<br>
+<br>
+<div class="uk-container">
+    <div id="entity-list-container" class="uk-flex uk-width-5-5">
+        <div class="table-container uk-card uk-card-default uk-card-body uk-width-1-1 uk-padding-remove uk-overflow-auto">
+            <table class="uk-table uk-table-small uk-table-divider uk-table-responsive">
+                <thead>
+                    <tr>
+                        <th class="uk-text-capitalize uk-text-center"> Item No. </th>
+                        <th class="uk-text-capitalize uk-text-center"> Name </th>
+                        <th class="uk-text-capitalize uk-text-center"> Amount </th>
+                        <th class="uk-text-capitalize uk-text-center"> Invenotry Code </th>
+                        <th class="uk-text-capitalize uk-text-center"> Stock Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="uk-text-center" *ngFor="let item of itemList">
+                        <td> {{ item.id }} </td>
+                        <td> {{ item.name}} </td>
+                        <td> {{ item.amount}}</td>
+                        <td> {{ item.inventoryCode}} </td>
+                        <td><input id="{{'lblQuantityId' + item.id}}" name="lblQuantityName" class="uk-input uk-form-width-xsmall" type="numeric" value="{{item.quantity}}" disabled></td>
+                        <td>
+                            <button id="{{'btnOnAddStockId' + item.id}}" name="btnOnAddStockName" class="uk-button uk-button-link uk-button-small uk-text-capitalize uk-text-success cursor-pointer" type="button" uk-toggle="target: #modal-qty" (click)="quantityType('plus', item)"
+                                uk-tooltip="Deposit quantity of a specific item to stock">
+                                <span uk-icon="plus-circle" style="color: green;"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button id="{{'btnOnSubStockId' + item.id}}" name="btnOnSubStockName" class="uk-button uk-button-link uk-button-small uk-text-capitalize uk-text-warning cursor-pointer" type="button" uk-toggle="target: #modal-qty" (click)="quantityType('minus', item)"
+                                uk-tooltip="Withdrawal quantity of a specific item from stock"> 
+                                <span uk-icon="minus-circle" style="color: red;"></span> 
+                            </button>
+                        </td>
+                        <td>
+                            <button id="{{'btnDeleteItemId' + item.id}}" name="btnDeleteItemName" class="uk-button uk-button-link uk-button-small uk-text-capitalize uk-text-warning cursor-pointer" type="button" uk-toggle="target: #modal-item" (click)="updateItem(item)" uk-tooltip="Edit Item"> 
+                                <span uk-icon="pencil" style="color: blue;"></span> 
+                            </button>
+                        </td>
+                        <td>
+                            <button id="{{'btnDeleteItemId' + item.id}}" name="btnDeleteItemName" class="uk-button uk-button-link uk-button-small uk-text-capitalize uk-text-warning cursor-pointer" type="button" (click)="deleteItem(item)" uk-tooltip="Delete Item"> 
+                                <span uk-icon="trash" style="color: blue;"></span> 
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+    <div class="uk-width-3-5">
+        <div *ngIf="showNoDataItem" class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>{{msn}}</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL QUANTITY STOCK -->
+<div id="modal-qty" uk-modal>
+    <div class="uk-modal-dialog">
+        <button id="btnCloseModalQtyId" name="closeModalQtyName" class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <h2 class="uk-modal-title">Stock Quantity</h2>
+        </div>
+        <div class="uk-modal-body">
+            <div class="uk-grid-small" uk-grid>
+
+                <div class="uk-width-1-1 uk-margin-small-top uk-margin-small-bottom"></div>
+
+                <div class="uk-width-2-3">{{quantityText}}:</div>
+                <div class="uk-width-1-3">
+                    <input class="uk-input" id="quantityId" name="quantityNamne" type="number" [(ngModel)]="quantity">
+                </div>
+                <div class="uk-width-3-3">
+                    <div *ngIf="showMsnNumericPos" class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>{{msn}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uk-modal-footer ">
+            <div class="uk-float-right">
+                <button id="btnCloseModalQtyId" name="btnCloseModalQtyName" class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button class="uk-button uk-button-primary" type="button" (click)="saveQtyStock()">Save</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- MODAL ITEM Detail-->
+<div id="modal-item" uk-modal>
+    <div class="uk-modal-dialog">
+
+        <button id="btnCloseModalItemDetId" name="btnCloseModalItemDetNamer" class="uk-modal-close-default" type="button" uk-close></button>
+
+        <div class="uk-modal-header">
+            <h2 class="uk-modal-title">Item Detail</h2>
+        </div>
+
+        <div class="uk-modal-body">
+            <div class="uk-grid-small" uk-grid>
+
+                <div class="uk-width-1-1 uk-margin-small-top uk-margin-small-bottom"></div>
+
+                <div class="uk-width-1-3">Item Name:</div>
+                <div class="uk-width-1-3">
+                    <input class="uk-input" id="itemNameDetId" name="itemNameDetName" type="text" placeholder="" [(ngModel)]="itemDetail.name" required>
+                </div>
+                <div class="uk-width-2-3">
+                    <div *ngIf="showMsnName" class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>Name is required</p>
+                    </div>
+                </div>
+                <div class="uk-width-1-3"></div>
+
+                <div class="uk-width-1-3">Amount:</div>
+                <div class="uk-width-1-3">
+                    <input class="uk-input" id="itemAmountDetId" name="itemAmountDetName" type="number" placeholder="" [(ngModel)]="itemDetail.amount">
+                </div>
+                <div class="uk-width-1-3">
+                    <div *ngIf="showMsnNumericPos" class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>{{msn}}</p>
+                    </div>
+                </div>
+                <div class="uk-width-1-3">Inventory Code:</div>
+                <div class="uk-width-1-3">
+                    <input class="uk-input" id="itemInvCodeDetId" name="itemInvCodeDetName" type="text" placeholder="" [(ngModel)]="itemDetail.inventoryCode">
+                </div>
+                <div class="uk-width-1-3"></div>
+
+                <div class="uk-width-1-3">Stock Qty:</div>
+                <div class="uk-width-1-3">
+                    <input class="uk-input" id="itemQtyDetId" name="itemQtyDetName" type="number" placeholder="0" [(ngModel)]="itemDetail.quantity">
+                </div>
+                <div class="uk-width-2-3">
+                    <div *ngIf="showMsnNumericQty" class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>{{msn}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uk-modal-footer ">
+            <div class="uk-float-right">
+                <button id="btnCloseModalItemDetId" name="btnCloseModalItemDetName" class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button id="btnSaveItemDetId" name="btnSaveItemDetName" class="uk-button uk-button-primary" type="button" (click)="saveItemDetail()">Save</button>
+            </div>
+        </div>
+
+    </div>
+</div>
